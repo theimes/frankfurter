@@ -1,2 +1,2 @@
-BASE_URL = "api.frankfurter.app"
-BASE_HEADERS = {"Accept" : "*/*","User-Agent" : "Python Package"}
+BASE_URL = "api.frankfurter.dev/v1"
+BASE_HEADERS = {"Accept": "*/*", "User-Agent": "Python Package"}
