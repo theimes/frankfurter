@@ -7,4 +7,4 @@ def test_get_currencies():
 
 def test_get_latest_data():
     engine = FrankfurterEngine()
-    engine.fetch_latest_data(base="USD",to="INR")
+    engine.fetch_latest_data(base="USD",symbols="INR,BRL")

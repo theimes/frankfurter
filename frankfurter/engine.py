@@ -12,7 +12,7 @@ class FrankfurterEngine:
     def __init__(self, quiet_mode: bool = True) -> None:
         self.quiet_mode = quiet_mode
         if not quiet_mode:
-            Logger.info("Currency Engine Initiallized")
+            Logger.info("Currency Engine Initialized")
         self.__base_url = BASE_URL
         self.__base_headers = BASE_HEADERS
 
@@ -43,28 +43,29 @@ class FrankfurterEngine:
         if currency not in self.fetch_currencies().keys():
             raise UnknownCurrencyException(f"Unknown Currency : {currency}")
 
-    def fetch_latest_data(self, base: str = None, to: str = None) -> dict:
+    def fetch_latest_data(self, base: str = None, symbols: str = None) -> dict:
         """
         Fetches the latest forex data provided by the European Central Bank.
 
         Parameters:
             base (str): The base currency to convert from (optional, default: EUR).
-            to (str): The target currency to convert to (optional).
+            symbols (str): Comma-separated list of target currencies (optional).
 
         Returns:
             dict: Latest forex data for the provided base and target currencies.
         """
         if base:
             self._check_valid_currency(base)
-        if to:
-            self._check_valid_currency(to)
-        query_params = {"from": base, "to": to}
+        if symbols:
+            for symbol in symbols.split(','):
+                self._check_valid_currency(symbol.strip())
+        query_params = {"base": base, "symbols": symbols}
         return self.__api_call(query_params, path_params=["latest"])
 
     def fetch_time_series_data(
         self,
         base: str = None,
-        to: str = None,
+        symbols: str = None,
         start_date: str = None,
         end_date: str = None,
     ) -> dict:
@@ -73,40 +74,42 @@ class FrankfurterEngine:
 
         Parameters:
             base (str): The base currency to convert from (optional, default: EUR).
-            to (str): The target currency to convert to (optional).
+            symbols (str): Comma-separated list of target currencies (optional).
             start_date (str): The start date in YYYY-MM-DD format (required).
-            end_date (str): The end date in YYYY-MM-DD format (optional). If not given, the data from start_date to the present day is returned.
+            end_date (str): The end date in YYYY-MM-DD format (optional).
 
         Returns:
             dict: Forex data for the given time range.
         """
         if base:
             self._check_valid_currency(base)
-        if to:
-            self._check_valid_currency(to)
-        query_params = {"from": base, "to": to}
+        if symbols:
+            for symbol in symbols.split(','):
+                self._check_valid_currency(symbol.strip())
+        query_params = {"base": base, "symbols": symbols}
         if not start_date:
-            return self.fetch_latest_data(base, to)
-        path_params = f'{start_date}..{end_date or ""}'
-        return self.__api_call(query_params=query_params, path_params=[path_params])
+            return self.fetch_latest_data(base, symbols)
+        path_params = [f'{start_date}..{end_date or ""}']
+        return self.__api_call(query_params=query_params, path_params=path_params)
 
-    def fetch_data_for_date(self, date: str, base: str = None, to: str = None) -> dict:
+    def fetch_data_for_date(self, date: str, base: str = None, symbols: str = None) -> dict:
         """
         Fetches forex data for a specific date.
 
         Parameters:
             date (str): The specific date in YYYY-MM-DD format.
             base (str): The base currency to convert from (optional, default: EUR).
-            to (str): The target currency to convert to (optional).
+            symbols (str): Comma-separated list of target currencies (optional).
 
         Returns:
             dict: Forex data for the specified date.
         """
         if base:
             self._check_valid_currency(base)
-        if to:
-            self._check_valid_currency(to)
-        query_params = {"from": base, "to": to}
+        if symbols:
+            for symbol in symbols.split(','):
+                self._check_valid_currency(symbol.strip())
+        query_params = {"base": base, "symbols": symbols}
         return self.__api_call(query_params=query_params, path_params=[date])
 
     @lru_cache
@@ -135,7 +138,7 @@ class FrankfurterEngine:
         self._check_valid_currency(to)
 
         # Fetch the latest exchange rate data
-        rates = self.fetch_latest_data(base=base, to=to)
+        rates = self.fetch_latest_data(base=base, symbols=to)
 
         # Get the exchange rate from the 'rates' field
         exchange_rate = rates["rates"].get(to)
@@ -144,5 +147,5 @@ class FrankfurterEngine:
             return amount * exchange_rate
         else:
             raise FrankfurterCallFailedException(
-                {"statusCode" : 404, "reason" : f'No exchange rate found for {base} to {to}.'}
+                {"statusCode": 404, "reason": f'No exchange rate found for {base} to {to}.'}
             )
