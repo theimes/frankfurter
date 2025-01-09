@@ -40,7 +40,7 @@ print(currencies)
 To fetch the latest forex data for a base currency and an optional target currency:
 
 ```
-latest_data = engine.fetch_latest_data(base="USD", to="EUR")
+latest_data = engine.fetch_latest_data(base="USD", symbols="EUR,INR,CZK")
 print(latest_data)
 ```
 
@@ -49,7 +49,7 @@ print(latest_data)
 To fetch forex data for a specific date:
 
 ```
-historical_data = engine.fetch_data_for_date(date="2022-01-01", base="USD", to="EUR")
+historical_data = engine.fetch_data_for_date(date="2022-01-01", base="USD", symbols="EUR,BRL")
 print(historical_data)
 ```
 
@@ -59,7 +59,7 @@ To fetch forex data over a date range:
 
 ```
 time_series_data = engine.fetch_time_series_data(
-    base="USD", to="EUR", start_date="2022-01-01", end_date="2022-12-31"
+    base="USD", symbols="EUR,INR", start_date="2022-01-01", end_date="2022-12-31"
 )
 print(time_series_data)
 ```
@@ -67,6 +67,6 @@ print(time_series_data)
 # API Documentation
 
 API Documentation
-For more information on the API itself, visit the [official documentation](https://www.frankfurter.app/docs/).
+For more information on the API itself, visit the [official documentation](https://www.frankfurter.dev/).
 
 
