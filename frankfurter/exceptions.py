@@ -1,13 +1,8 @@
-REASON_NOT_FOUND = "Reason Not Found"
-
-
 class FrankfurterCallFailedException(Exception):
-    def __init__(self, response: dict = None, *args: object) -> None:
-        super().__init__(*args)
-        self.reason = response.get("reason", REASON_NOT_FOUND)
-        raise Exception(
-            f'Frankfurter API call has failed. \nStatusCode : {response.get("statusCode")} \nReason : {self.reason}'
-        )
+    def __init__(self, status_code: int, reason: str) -> None:
+        self.status_code = status_code
+        self.reason = reason
+        super().__init__(f"Frankfurter API call failed. Status: {status_code}. Reason: {reason}")
 
 
 class UnknownCurrencyException(Exception):
